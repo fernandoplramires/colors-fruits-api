@@ -1,0 +1,385 @@
+{
+	"info": {
+		"_postman_id": "f0463777-9300-446d-86e9-30adc9350fb0",
+		"name": "Colors Fruit API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6573893"
+	},
+	"item": [
+		{
+			"name": "localhost",
+			"item": [
+				{
+					"name": "PUSH Fruit",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c0gn1z4nt",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "cognizant",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "client_id",
+								"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8",
+								"type": "text"
+							},
+							{
+								"key": "client_secret",
+								"value": "b3983C09Bf474056811Dc94C405A3b37",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/push/banana",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"push",
+								"banana"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POP Fruit",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c0gn1z4nt",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "cognizant",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "client_id",
+								"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8",
+								"type": "text"
+							},
+							{
+								"key": "client_secret",
+								"value": "b3983C09Bf474056811Dc94C405A3b37",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/pop/fruits?client_id=bdd43aec112a4ce1a3d8cb48a8fcd6c8&client_secret=b3983C09Bf474056811Dc94C405A3b37",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"pop",
+								"fruits"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8"
+								},
+								{
+									"key": "client_secret",
+									"value": "b3983C09Bf474056811Dc94C405A3b37"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cloudhub",
+			"item": [
+				{
+					"name": "PUSH Fruit",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c0gn1z4nt",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "cognizant",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "client_id",
+								"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8",
+								"type": "text"
+							},
+							{
+								"key": "client_secret",
+								"value": "b3983C09Bf474056811Dc94C405A3b37",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://colors-fruits-api.br-s1.cloudhub.io/api/push/banana",
+							"protocol": "http",
+							"host": [
+								"colors-fruits-api",
+								"br-s1",
+								"cloudhub",
+								"io"
+							],
+							"path": [
+								"api",
+								"push",
+								"banana"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POP Fruit",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c0gn1z4nt",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "cognizant",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "client_id",
+								"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8",
+								"type": "text"
+							},
+							{
+								"key": "client_secret",
+								"value": "b3983C09Bf474056811Dc94C405A3b37",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://colors-fruits-api.br-s1.cloudhub.io/api/pop/fruits?client_id=bdd43aec112a4ce1a3d8cb48a8fcd6c8&client_secret=b3983C09Bf474056811Dc94C405A3b37",
+							"protocol": "http",
+							"host": [
+								"colors-fruits-api",
+								"br-s1",
+								"cloudhub",
+								"io"
+							],
+							"path": [
+								"api",
+								"pop",
+								"fruits"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8"
+								},
+								{
+									"key": "client_secret",
+									"value": "b3983C09Bf474056811Dc94C405A3b37"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POP Color",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c0gn1z4nt",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "cognizant",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "client_id",
+								"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8",
+								"type": "text"
+							},
+							{
+								"key": "client_secret",
+								"value": "b3983C09Bf474056811Dc94C405A3b37",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://colors-fruits-api.br-s1.cloudhub.io/api/pop/colors?client_id=bdd43aec112a4ce1a3d8cb48a8fcd6c8&client_secret=b3983C09Bf474056811Dc94C405A3b37",
+							"protocol": "http",
+							"host": [
+								"colors-fruits-api",
+								"br-s1",
+								"cloudhub",
+								"io"
+							],
+							"path": [
+								"api",
+								"pop",
+								"colors"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8"
+								},
+								{
+									"key": "client_secret",
+									"value": "b3983C09Bf474056811Dc94C405A3b37"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POP Undefinied",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c0gn1z4nt",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "cognizant",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "client_id",
+								"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8",
+								"type": "text"
+							},
+							{
+								"key": "client_secret",
+								"value": "b3983C09Bf474056811Dc94C405A3b37",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://colors-fruits-api.br-s1.cloudhub.io/api/pop/undefinied?client_id=bdd43aec112a4ce1a3d8cb48a8fcd6c8&client_secret=b3983C09Bf474056811Dc94C405A3b37",
+							"protocol": "http",
+							"host": [
+								"colors-fruits-api",
+								"br-s1",
+								"cloudhub",
+								"io"
+							],
+							"path": [
+								"api",
+								"pop",
+								"undefinied"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "bdd43aec112a4ce1a3d8cb48a8fcd6c8"
+								},
+								{
+									"key": "client_secret",
+									"value": "b3983C09Bf474056811Dc94C405A3b37"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "c0gn1z4nt",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "cognizant",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

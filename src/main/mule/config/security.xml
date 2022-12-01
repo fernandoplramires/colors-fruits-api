@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
+	  xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	  xmlns="http://www.mulesoft.org/schema/mule/core"
+	  xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+						  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+						  http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+	<spring:config name="Spring_Config" doc:name="Spring Config" doc:id="99dfc4e5-26a6-47df-948a-d2e2a0b2b767" files="beans.xml" />
+	
+	<spring:security-manager doc:name="Spring Security manager" doc:id="e87337b6-f69c-4d52-bb94-f8891444f824" >
+		<spring:delegate-security-provider name="memory-provider" delegate-ref="authenticationManager" />
+	</spring:security-manager>
+	
+	<sub-flow name="security-subFlow" doc:id="4b09218a-82b3-4787-90f4-618997819bf6" >
+		<http:basic-security-filter doc:name="HTTP Requests" doc:id="7da06683-a621-49dc-b856-3dc7cdf5ef8d" realm="mule"/>
+		<spring:authorization-filter doc:name="Required Authorities" doc:id="bb1fec7e-a629-4a0c-a777-6fdefc21c095" requiredAuthorities="ROLE_ADMIN"/>
+	</sub-flow>
+</mule>

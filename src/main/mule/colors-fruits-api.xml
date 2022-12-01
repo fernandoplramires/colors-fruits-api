@@ -1,150 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
-		xmlns:http="http://www.mulesoft.org/schema/mule/http"
-		xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
-		xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-		xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
-		xmlns="http://www.mulesoft.org/schema/mule/core"
-		xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-							http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
-							http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-							http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
-							http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-							http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
-							
-	<global-property doc:name="Global Property" doc:id="5c4255b6-67c4-4647-b4b8-9396f1448174" name="mule.env" value="localhost" />
-	<global-property doc:name="Global Property" doc:id="2727387c-84d3-4f9c-abe7-80551014bc3e" name="mule.key" value="123456789abcdefg" />
-	
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="6cbf7f8e-7d3f-4aa8-bec2-25e935e5839f" file="properties\secure-dev.yaml" key="${mule.key}" />
-	
-	<configuration-properties doc:name="Configuration properties" doc:id="b1c58501-a047-4115-b9d3-6c41ef869c77" file="properties/${mule.env}.yaml" />
-	<configuration-properties doc:name="Configuration properties" doc:id="4452ecdf-5f9c-445c-9e46-1d064587e8e4" file="properties\fruits.yaml" />
-	<configuration-properties doc:name="Configuration properties" doc:id="e452b46f-5d54-4158-a2a5-4526d50d4048" file="properties\colors.yaml" />
-	
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3c3d6f8b-3c0f-489c-8a45-39fc4f06a03f" basePath="api" >
-		<http:listener-connection host="0.0.0.0" port="8081" />
-	</http:listener-config>
-	
-	<anypoint-mq:config name="Anypoint_MQ_Config" doc:name="Anypoint MQ Config" doc:id="98c6e153-fd9e-4b91-bc53-1b9c8ca19b2f" >
-		<anypoint-mq:connection clientId="${secure::amq.client.id}" clientSecret="${secure::amq.client.secret}" />
-	</anypoint-mq:config>
-	
-	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="3af2cb8d-8b76-4496-a0c7-84ed0fc892b0" >
-		<jms:active-mq-connection username="${secure::activemq.client.id}" password="${secure::activemq.client.secret}" >
-			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
-		</jms:active-mq-connection>
-	</jms:config>
-	
-	<flow name="push-word-flow" doc:id="e8a7dd5d-03b7-4c0d-9b68-1797e8c85b95" >
-		<http:listener doc:name="push/{word}" doc:id="9fd1c655-752d-4182-b498-1574de3b0687" config-ref="HTTP_Listener_config" path="push/{word}"/>
-		<logger level="INFO" doc:name="Word" doc:id="b2d83626-0224-46db-b4c0-2706208d3c13" message="(ActiveMQ=#[p('activemq')]) Push word [#[attributes.uriParams.'word']] to [input]"/>
-		<choice doc:name="ActiveMQ or AnypointMQ?" doc:id="fbf44ad6-ab47-4bbf-a9bf-9ec6df8708b4" >
-			<when expression="#[p('activemq') == &quot;true&quot;]">
-				<jms:publish doc:name="Input" doc:id="27af2022-7475-4033-b9b2-d33cec084e97" destination="input" sendCorrelationId="ALWAYS" config-ref="JMS_Config">
-					<jms:message >
-						<jms:body ><![CDATA[#[attributes.uriParams.'word']]]></jms:body>
-					</jms:message>
-				</jms:publish>
-			</when>
-			<otherwise >
-				<anypoint-mq:publish doc:name="Input" doc:id="7e63c7a6-e4c9-42c5-b0b1-44814c43288f" config-ref="Anypoint_MQ_Config" destination="input">
-			<anypoint-mq:body><![CDATA[#[attributes.uriParams.'word']]]></anypoint-mq:body>
-		</anypoint-mq:publish>
-			</otherwise>
-		</choice>
-	</flow>
-	
-	<sub-flow name="set-word-type-route-subflow" doc:id="f36b78cc-cef2-40d2-896f-45ecd89294e7" >
-		<logger level="INFO" doc:name="Input" doc:id="5ec6c006-585d-41ff-b246-92d5e741372e" message="(ActiveMQ=#[p('activemq')]) Received word [#[payload]] from [input]" />
-		<ee:transform doc:name="Fruits and Colors  List" doc:id="17c99418-d6de-40f1-9e22-6b69b7698373">
-			<ee:message>
-			</ee:message>
-			<ee:variables>
-				<ee:set-variable variableName="fruits"><![CDATA[%dw 2.0
-output application/java
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:http="http://www.mulesoft.org/schema/mule/http"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+      					  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+      					  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+      					  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <apikit:config name="colors-fruits-api-config" api="colors-fruits-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    
+    <flow name="colors-fruits-api-main">
+        <http:listener config-ref="HTTP_Listener_config" path="*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+		<flow-ref doc:name="Security Filter" doc:id="ba37a809-835e-4496-bfc1-c5bbd1d2d547" name="security-subFlow"/>
+		<apikit:router config-ref="colors-fruits-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
-p('fruits') splitBy ","]]></ee:set-variable>
-				<ee:set-variable variableName="colors"><![CDATA[%dw 2.0
-output application/java
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
-p('colors') splitBy ","]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<choice doc:name="Fruit, Color or Undefined?" doc:id="3b7a5ab2-5645-43af-b8f4-456883192edd">
-			<when expression="#[vars.fruits contains lower(payload)]">
-				<set-variable value="output-fruits" doc:name="Fruit Type" doc:id="f4276f16-f7a2-464d-8afd-b300901a125b" variableName="wordType" />
-			</when>
-			<when expression="#[vars.colors contains lower(payload)]">
-				<set-variable value="output-colors" doc:name="Color Type" doc:id="e105b74b-7926-4720-a0f4-6b56bd503358" variableName="wordType" />
-			</when>
-			<otherwise>
-				<set-variable value="output-undefined" doc:name="Undefined Type" doc:id="f9f13db9-272e-4634-9658-fc395fd3e2ac" variableName="wordType" />
-			</otherwise>
-		</choice>
-		<logger level="INFO" doc:name="Word Type" doc:id="3bb676b8-d47e-4281-9857-dde34467c258" message="(ActiveMQ=#[p('activemq')]) Word type to route [#[vars.wordType]]" />
-	</sub-flow>
-	<flow name="subscriber-input-fifo-queue-anypointmq-flow" doc:id="2795da2b-367d-420d-826f-a704f387108f" >
-		<anypoint-mq:subscriber doc:name="Input" doc:id="30c640ee-85a3-44fa-b1c3-0db38dc18956" config-ref="Anypoint_MQ_Config" destination="input"/>
-		<flow-ref doc:name="Set Word Type Route" doc:id="73f18acb-04e8-423a-b4cb-d49c35b6fb3c" name="set-word-type-route-subflow"/>
-		<anypoint-mq:publish doc:name="Exchange" doc:id="c906006e-b196-4625-b10b-cb80571d84a4" config-ref="Anypoint_MQ_Config" destination="exchange-route">
-			<anypoint-mq:properties><![CDATA[#[wordType: vars.wordType]]]></anypoint-mq:properties>
-		</anypoint-mq:publish>
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    
+    <flow name="colors-fruits-api-console">
+        <http:listener config-ref="HTTP_Listener_config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="colors-fruits-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform>
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    
+    <flow name="get:\pop\undefined:colors-fruits-api-config">
+		<flow-ref doc:name="Pop Output Undefined" doc:id="f91f8928-42c8-47dc-92be-2c087176c707" name="pop-output-undefined-flow"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7057d4ad-3648-41f4-870e-96bbdd39d2c9" type="ANYPOINT-MQ:TIMEOUT">
+				<set-variable value="204" doc:name="HTTP Status (204)" doc:id="4a1e709c-a47a-478a-a1ad-ffbe40878782" variableName="httpStatus" />
+			</on-error-continue>
+		</error-handler>
+    </flow>
+    
+    <flow name="get:\pop\fruits:colors-fruits-api-config" doc:id="ff947d2e-2b3b-418d-a153-a2f32592a0ed" >
+		<flow-ref doc:name="Pop Output Fruits" doc:id="cfe55d9c-db46-4f84-86c2-5ffb5bdb0389" name="pop-output-fruits-flow" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a2564319-eb96-43dd-ac42-aa0dc394ea98" type="ANYPOINT-MQ:TIMEOUT">
+				<set-variable value="204" doc:name="HTTP Status (204)" doc:id="7830b9c7-0793-42d3-afe9-6d3cb7278713" variableName="httpStatus" />
+			</on-error-continue>
+		</error-handler>
 	</flow>
 	
-	<flow name="subscriber-input-fifo-queue-activemq-flow" doc:id="3f870f16-9be2-4ee1-9fd3-b6e284f1f4ca" >
-		<jms:listener doc:name="Input" doc:id="f1694b87-c0f7-41f1-be68-0b557bd8339f" config-ref="JMS_Config" destination="input" ackMode="IMMEDIATE">
-			<jms:consumer-type >
-				<jms:queue-consumer />
-			</jms:consumer-type>
-		</jms:listener>
-		<flow-ref doc:name="Set Word Type Route" doc:id="8912e1e6-7d0e-4a27-9feb-8c296832b296" name="set-word-type-route-subflow" />
-		<jms:publish doc:name="Output Colors, Fruits or Undefined" doc:id="8d084ded-b51c-4aa1-8cdf-243c0de53610" config-ref="JMS_Config" destination="#[vars.wordType]"/>
-	</flow>
-	<flow name="pop-output-colors-flow" doc:id="79b1c01e-a479-4104-9531-18fb28ba28ed">
-		<http:listener doc:name="pop/colors" doc:id="d9ad90e4-1229-40e6-a94f-840dc7c0ca5d" path="pop/colors" config-ref="HTTP_Listener_config" />
-		<choice doc:name="ActiveMQ or AnypointMQ?" doc:id="91640ef8-deac-43c6-983e-f43caeabe1fd" >
-			<when expression="#[p('activemq') == &quot;true&quot;]">
-				<jms:consume doc:name="Output Colors" doc:id="8cfd76dc-30e7-4f8f-aa9d-3c92cdc6a439" destination="output-colors" ackMode="IMMEDIATE" config-ref="JMS_Config"/>
-			</when>
-			<otherwise >
-				<anypoint-mq:consume doc:name="Output Colors" doc:id="768148c0-e7b6-478b-a140-b1e756e5100f" config-ref="Anypoint_MQ_Config" destination="output-colors" />
-			</otherwise>
-		</choice>
-		<logger level="INFO" doc:name="Word Color" doc:id="23245a85-23bf-43c4-a752-16320b763cc8" message="(ActiveMQ=#[p('activemq')]) Pop word [#[payload]] from [output-colors]" />
-		<set-payload value="#[payload]" doc:name="Response" doc:id="3d7a65b0-8a33-4543-bffe-6ce1ddd6b530" mimeType="text/plain"/>
+	<flow name="get:\pop\colors:colors-fruits-api-config" doc:id="97767df3-4b5c-410d-bd44-ee2cde680239" >
+		<flow-ref doc:name="Pop Output Colors" doc:id="3eac6532-2940-470b-b3ee-6d36eb1583be" name="pop-output-colors-flow" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="83ce103f-a345-4c2b-9f58-ad9eb7cafa0f" type="ANYPOINT-MQ:TIMEOUT">
+				<set-variable value="204" doc:name="HTTP Status (204)" doc:id="5897910d-41f3-49d6-b982-922c2759f6b4" variableName="httpStatus" />
+			</on-error-continue>
+		</error-handler>
 	</flow>
 	
-	<flow name="pop-output-fruits-flow" doc:id="9af56c96-1fe6-498d-bd4d-299b7b163793" >
-		<http:listener doc:name="pop/fruits" doc:id="f6097bf9-c5d6-4260-aec2-561f6c725ee4" config-ref="HTTP_Listener_config" path="pop/fruits" />
-		<choice doc:name="ActiveMQ or AnypointMQ?" doc:id="d4ca4572-3d69-45e3-9321-1482878b7830" >
-			<when expression="#[p('activemq') == &quot;true&quot;]">
-				<jms:consume doc:name="Output Fruits" doc:id="7ce74a6d-232e-4bd7-9965-111b5731489b" config-ref="JMS_Config" ackMode="IMMEDIATE" destination="output-fruits"/>
-			</when>
-			<otherwise >
-				<anypoint-mq:consume doc:name="Output Fruits" doc:id="f72e5195-9ec4-4b69-9dab-18bc8944b5a3" config-ref="Anypoint_MQ_Config" destination="output-fruits" />
-			</otherwise>
-		</choice>
-		<logger level="INFO" doc:name="Word Fruit" doc:id="7f64534e-3478-49a0-99d3-854a3f28f92c" message="(ActiveMQ=#[p('activemq')]) Pop word [#[payload]] from [output-colors]" />
-		<set-payload value="#[payload]" doc:name="Response" doc:id="b2ba1004-1d12-49c9-9897-66b9364bdccf" mimeType="text/plain" />
-	</flow>
-	
-	<flow name="pop-output-undefined-flow" doc:id="816e8692-33bc-4076-a509-b257eadc73d3" >
-		<http:listener doc:name="pop/undefined" doc:id="891b3611-b72f-43db-9cb8-89db7f713837" config-ref="HTTP_Listener_config" path="pop/undefined" />
-		<choice doc:name="ActiveMQ or AnypointMQ?" doc:id="2785da18-5610-4ec9-9224-3de25a5f9667" >
-			<when expression="#[p('activemq') == &quot;true&quot;]">
-				<jms:consume doc:name="Output Undefined" doc:id="d73d56f3-f524-4043-8faf-4467350a844b" destination="output-undefined" config-ref="JMS_Config" ackMode="IMMEDIATE">
-					<jms:consumer-type >
-						<jms:queue-consumer />
-					</jms:consumer-type>
-				</jms:consume>
-			</when>
-			<otherwise >
-				<anypoint-mq:consume doc:name="Output Undefined" doc:id="4d0a6a7b-85b4-4bce-9f3e-7c3a137c3c76" config-ref="Anypoint_MQ_Config" destination="output-undefined" />
-			</otherwise>
-		</choice>
-		<logger level="INFO" doc:name="Word Undefined" doc:id="84e508ee-354f-450d-a208-8fb4db4641ec" message="(ActiveMQ=#[p('activemq')]) Pop word [#[payload]] from [output-colors]" />
-		<set-payload value="#[payload]" doc:name="Response" doc:id="bb2cf97c-2f1b-4e60-872f-6d6ca93269b6" mimeType="text/plain" />
-	</flow>
+	<flow name="post:\push\(word):colors-fruits-api-config" doc:id="7143f8db-3b25-4d5d-aaa8-19f30dcc105f">
+		<flow-ref doc:name="Push Word" doc:id="3673c067-4e54-4ad5-8b36-a3fde5cacba2" name="push-word-flow"/>
+		<set-variable value="201" doc:name="HTTP Status (201)" doc:id="753166bc-5118-42dd-bf42-b899e7c569f9" variableName="httpStatus"/>
+    </flow>
 </mule>
