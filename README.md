@@ -9,12 +9,12 @@ Some endpoints were also created to remove/pop the word from thes queues.
 (queue/fifo) Input -> (exchange) exchange-route -> (queues) output-[colors/fruits/undefined]
 
 # Push:
-https://colors-fruits-api.br-s1.cloudhub.io/api/push/{word}
+http://colors-fruits-api.br-s1.cloudhub.io/api/push/{word}
 
 # Pop:
-https://colors-fruits-api.br-s1.cloudhub.io/api/pop/fruits
-https://colors-fruits-api.br-s1.cloudhub.io/api/pop/colors
-https://colors-fruits-api.br-s1.cloudhub.io/api/pop/undefined
+http://colors-fruits-api.br-s1.cloudhub.io/api/pop/fruits
+http://colors-fruits-api.br-s1.cloudhub.io/api/pop/colors
+http://colors-fruits-api.br-s1.cloudhub.io/api/pop/undefined
 
 # Authentication:
 
