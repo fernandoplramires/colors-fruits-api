@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+		xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+		xmlns:http="http://www.mulesoft.org/schema/mule/http"
+		xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+		xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+		xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+		xmlns="http://www.mulesoft.org/schema/mule/core"
+		xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+							http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+							http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+							http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+							http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+							http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+							http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<global-property doc:name="Global Property" doc:id="fc6d499a-2b8d-4c14-aa08-72b05c30dd22" name="mule.env" value="dev" />
+	<global-property doc:name="Global Property" doc:id="083ebc41-a36b-4cc0-bebc-e9e74486d2e8" name="mule.key" value="123456789abcdefg" />
+	
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="50e80816-24d3-42cf-8a4c-c90ae5cdedeb" file="properties/secure-dev.yaml" key="${mule.key}" />
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="51f6ebc3-5bc4-4063-b66a-c3b34cdbc7cd" file="properties/${mule.env}.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="b16bb048-17f0-4d5e-83fd-7309ff0e519f" file="properties/fruits.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="885490a1-ce11-4147-ae5a-0d0355d4dbcf" file="properties/colors.yaml" />
+	
+	<api-gateway:autodiscovery apiId="18339214" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="ef288260-cdef-410d-a09f-23ef85d11c7d" flowRef="colors-fruits-api-main" />
+	
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5535102f-39c1-4fab-89c5-4b1698ae878a" basePath="api" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	
+	<anypoint-mq:config name="Anypoint_MQ_Config" doc:name="Anypoint MQ Config" doc:id="fe63b89b-cf32-4073-a930-b3e5cd8f306e" >
+		<anypoint-mq:connection clientId="${secure::amq.client.id}" clientSecret="${secure::amq.client.secret}" />
+	</anypoint-mq:config>
+	
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="3834b03b-da7c-4355-9760-44c2325c881f" >
+		<jms:active-mq-connection username="${secure::activemq.client.id}" password="${secure::activemq.client.secret}" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+</mule>

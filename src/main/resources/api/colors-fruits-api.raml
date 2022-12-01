@@ -1,0 +1,54 @@
+#%RAML 1.0
+title: colors-fruits-api
+description: Micro API to
+version: v1.0.2
+
+mediaType: application/json
+
+securitySchemes:
+  basic:
+    description: |
+      This API supports Basic Authentication.
+    type: Basic Authentication
+
+/push:
+  /{word}:
+    post:
+      securedBy: [basic]
+      description: Insert one (1) new word in MQ to categorize type.
+      responses:
+        201:
+        401:
+        429:
+        500:
+/pop:
+  /colors:
+    get:
+      securedBy: [basic]
+      description: Pop one (1) color word type, if exists resource from type.
+      responses:
+        200:
+        204:
+        401:
+        429:
+        500:
+  /fruits:
+    get:
+      securedBy: [basic]
+      description: Pop one (1) fruit word type, if exists resource from type.
+      responses:
+        200:
+        204:
+        401:
+        429:
+        500:
+  /undefined:
+    get:
+      securedBy: [basic]
+      description: Pop one (1) undefined word type, if exists in resource from type.
+      responses:
+        200:
+        204:
+        401:
+        429:
+        500:
